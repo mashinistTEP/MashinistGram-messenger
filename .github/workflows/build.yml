@@ -1,6 +1,8 @@
 name: Build APK
 
 on:
+  push:
+    branches: [ kivy-build ]
   workflow_dispatch:
 
 jobs:
@@ -21,7 +23,9 @@ jobs:
           sudo apt install -y libffi-dev libssl-dev autoconf automake libtool
       
       - name: Build APK
-        run: buildozer android debug
+        run: |
+          yes | sdkmanager --licenses
+          buildozer android debug
       
       - name: Upload APK
         uses: actions/upload-artifact@v4
