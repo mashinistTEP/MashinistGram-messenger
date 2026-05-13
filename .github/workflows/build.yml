@@ -24,7 +24,8 @@ jobs:
       
       - name: Build APK
         run: |
-          yes | sdkmanager --licenses
+          export ANDROID_HOME=/home/runner/.buildozer/android/platform/android-sdk
+          yes | $ANDROID_HOME/tools/bin/sdkmanager --sdk_root=$ANDROID_HOME --licenses
           buildozer android debug
       
       - name: Upload APK
