@@ -25,10 +25,13 @@ class ProfileScreen(Screen):
             u = res['user']
             l.add_widget(Image(source=icon('user.png'), size=(80, 80), pos_hint={'center_x': 0.5}))
             name = f"{u['first_name']} {u['last_name']}"
-            if u.get('verified'):
-                name += ' ✅'
+            if u.get('verified'): name += ' ✅'
+            if u.get('has_premium'): name += ' ⭐'
+            if u.get('sponsor_count', 0) > 0: name += ' 💎'
             l.add_widget(Label(text=name, font_size=24, color=WHITE, halign='center'))
             l.add_widget(Label(text=f"Email: {u['email']}", color=WHITE, halign='center'))
+            if u.get('username'):
+                l.add_widget(Label(text=f"@{u['username']}", color=PURPLE, halign='center'))
             l.add_widget(Label(text=f"⭐ {u.get('stars_balance', 0)}", color=GOLD, halign='center'))
         
         l.add_widget(Button(text='Выйти', size_hint_y=None, height=50, background_color=DARK, on_press=self.logout))
@@ -36,6 +39,8 @@ class ProfileScreen(Screen):
 
     def logout(self, i):
         API.request('logout.php', 'POST', {'token': App.get_running_app().token})
-        App.get_running_app().token = None
-        App.get_running_app().user_id = None
+        app = App.get_running_app()
+        app.token = None
+        app.user_id = None
+        app.save_session()
         self.manager.current = 'login'

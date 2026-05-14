@@ -44,6 +44,7 @@ class LoginScreen(Screen):
         if 'token' in res:
             app = App.get_running_app()
             app.token, app.user_id = res['token'], res['user_id']
+            app.save_session()
             self.manager.current = 'chats'
         else:
             self.email.text = res.get('error', 'Ошибка')
@@ -80,6 +81,7 @@ class RegisterScreen(Screen):
         if 'token' in res:
             app = App.get_running_app()
             app.token, app.user_id = res['token'], res['user_id']
+            app.save_session()
             self.manager.current = 'chats'
         else:
             self.fn.text = res.get('error', 'Ошибка')

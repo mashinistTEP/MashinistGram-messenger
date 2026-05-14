@@ -34,7 +34,10 @@ class SearchScreen(Screen):
         res = API.request('search_user.php', data={'q': self.query.text})
         if res.get('found'):
             u = res['user']
-            self.result.add_widget(Label(text=f"{u['first_name']} {u['last_name']}\n@{u['username']}\nID: {u['id']}", color=WHITE, size_hint_y=None, height=80))
+            name = f"{u['first_name']} {u['last_name']}"
+            if u.get('verified'): name += ' ✅'
+            if u.get('has_premium'): name += ' ⭐'
+            self.result.add_widget(Label(text=f"{name}\n@{u['username']}\nID: {u['id']}", color=WHITE, size_hint_y=None, height=80))
             self.result.add_widget(Button(text='Написать', size_hint_y=None, height=40, background_color=GOLD, on_press=lambda x: self.start_chat(u['id'])))
         else:
             self.result.add_widget(Label(text='Не найдено', color=WHITE))

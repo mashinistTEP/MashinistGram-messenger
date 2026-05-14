@@ -15,7 +15,8 @@ class IconButton(Button):
         super().__init__(**kwargs)
         self.background_normal = ''
         self.background_color = (0,0,0,0)
-        self.add_widget(Image(source=icon(icon_name), size=(30, 30), pos_hint={'center_x': 0.5, 'center_y': 0.5}))
+        self.img = Image(source=icon(icon_name), size=(30, 30), pos_hint={'center_x': 0.5, 'center_y': 0.5})
+        self.add_widget(self.img)
         self.bind(pos=self.update, size=self.update)
     def update(self, *args):
         self.canvas.before.clear()
@@ -49,7 +50,10 @@ class ChatsScreen(Screen):
         res = API.request('check_token.php', data={'token': App.get_running_app().token})
         if res.get('valid'):
             u = res['user']
-            l.add_widget(Label(text=f"  {u['first_name']} {u['last_name']}", size_hint_y=None, height=30, color=WHITE, halign='left'))
+            name = f"{u['first_name']} {u['last_name']}"
+            if u.get('verified'): name += ' ✅'
+            if u.get('has_premium'): name += ' ⭐'
+            l.add_widget(Label(text=f"  {name}", size_hint_y=None, height=30, color=WHITE, halign='left'))
         
         sv = ScrollView()
         cl = BoxLayout(orientation='vertical', spacing=5, padding=10, size_hint_y=None)
@@ -62,6 +66,8 @@ class ChatsScreen(Screen):
                 if chat.get('with_user'):
                     u = chat['with_user']
                     name = f"{u.get('first_name','')} {u.get('last_name','')}"
+                    if u.get('verified'): name += ' ✅'
+                    if u.get('has_premium'): name += ' ⭐'
                 btn = ChatButton(text=name, size_hint_y=None, height=70, on_press=lambda x, cid=chat['id']: self.open_chat(cid))
                 cl.add_widget(btn)
         else:
@@ -71,21 +77,21 @@ class ChatsScreen(Screen):
         self.add_widget(l)
 
     def open_menu(self, instance):
-        content = BoxLayout(orientation='vertical', spacing=10, padding=20)
+        content = BoxLayout(orientation='vertical', spacing=15, padding=20)
         items = [
-            ('user.png', '👤 Профиль', 'profile'),
-            ('settings.png', '⚙️ Настройки', 'settings'),
-            ('search.png', '🔍 Поиск', 'search'),
+            ('user.png', 'Профиль', 'profile'),
+            ('search.png', 'Контакты', 'search'),
+            ('settings.png', 'Настройки', 'settings'),
         ]
         for icon_name, text, screen in items:
-            row = BoxLayout(orientation='horizontal', spacing=10, size_hint_y=None, height=50)
-            row.add_widget(Image(source=icon(icon_name), size=(30, 30)))
-            row.add_widget(Label(text=text, color=WHITE))
-            btn = Button(size_hint_x=None, width=50, background_color=(0,0,0,0))
-            btn.bind(on_press=lambda x, s=screen: self.menu_action(s))
-            row.add_widget(btn)
+            row = BoxLayout(orientation='horizontal', spacing=15, size_hint_y=None, height=50)
+            row.add_widget(Image(source=icon(icon_name), size=(35, 35)))
+            lbl = Label(text=text, color=WHITE, halign='left', valign='middle')
+            lbl.bind(size=lbl.setter('text_size'))
+            row.add_widget(lbl)
+            row.bind(on_touch_down=lambda instance, touch, s=screen: self.menu_action(s) if instance.collide_point(*touch.pos) else None)
             content.add_widget(row)
-        self.popup = Popup(title='Меню', content=content, size_hint=(0.7, 0.5), auto_dismiss=True)
+        self.popup = Popup(title='Меню', content=content, size_hint=(0.7, 0.45), auto_dismiss=True)
         self.popup.open()
 
     def menu_action(self, screen):

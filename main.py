@@ -1,6 +1,7 @@
 from kivy.app import App
 from kivy.uix.screenmanager import ScreenManager
 from kivy.core.window import Window
+from kivy.storage.jsonstore import JsonStore
 from config import BG
 
 Window.clearcolor = BG
@@ -18,6 +19,13 @@ class MashinistGramApp(App):
     current_chat = None
 
     def build(self):
+        self.store = JsonStore('session.json')
+        
+        if self.store.exists('user'):
+            data = self.store.get('user')
+            self.token = data.get('token')
+            self.user_id = data.get('user_id')
+        
         sm = ScreenManager()
         sm.add_widget(LoginScreen(name='login'))
         sm.add_widget(RegisterScreen(name='register'))
@@ -26,7 +34,19 @@ class MashinistGramApp(App):
         sm.add_widget(SearchScreen(name='search'))
         sm.add_widget(ProfileScreen(name='profile'))
         sm.add_widget(SettingsScreen(name='settings'))
+        
+        if self.token:
+            from api import API
+            res = API.request('check_token.php', data={'token': self.token})
+            if res.get('valid'):
+                sm.current = 'chats'
+            else:
+                self.token = None
+                self.user_id = None
+                self.store.delete('user')
+        
         return sm
 
-if __name__ == '__main__':
-    MashinistGramApp().run()
+    def save_session(self):
+        if self.token:
+            self.store.put('user', token=self.token, user_id=self.user_id)
