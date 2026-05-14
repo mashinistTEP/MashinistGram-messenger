@@ -26,7 +26,14 @@ class API:
     def request(endpoint, method='GET', data=None):
         url = f"{API_URL}/{endpoint}"
         try:
-            r = requests.get(url, params=data, timeout=10) if method == 'GET' else requests.post(url, data=data, timeout=10)
+            import ssl
+            ctx = ssl.create_default_context()
+            ctx.check_hostname = False
+            ctx.verify_mode = ssl.CERT_NONE
+            if method == 'GET':
+                r = requests.get(url, params=data, timeout=10, verify=False)
+            else:
+                r = requests.post(url, data=data, timeout=10, verify=False)
             return r.json()
         except Exception as e:
             return {'error': str(e)}
