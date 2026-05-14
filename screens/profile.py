@@ -11,7 +11,6 @@ class ProfileScreen(Screen):
     def on_enter(self):
         self.clear_widgets()
         l = BoxLayout(orientation='vertical', padding=20, spacing=10)
-        
         top = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
         back = Button(size_hint_x=None, width=50, background_normal='', background_color=(0,0,0,0))
         back.add_widget(Image(source=icon('back.png'), size=(25, 25), pos_hint={'center_x': 0.5, 'center_y': 0.5}))
@@ -25,14 +24,15 @@ class ProfileScreen(Screen):
             u = res['user']
             l.add_widget(Image(source=icon('user.png'), size=(80, 80), pos_hint={'center_x': 0.5}))
             name = f"{u['first_name']} {u['last_name']}"
-            if u.get('verified'): name += ' ✅'
+            if u.get('is_creator'): name += ' 👑'
+            elif u.get('verified'): name += ' ✅'
             if u.get('has_premium'): name += ' ⭐'
             if u.get('sponsor_count', 0) > 0: name += ' 💎'
             l.add_widget(Label(text=name, font_size=24, color=WHITE, halign='center'))
             l.add_widget(Label(text=f"Email: {u['email']}", color=WHITE, halign='center'))
-            if u.get('username'):
-                l.add_widget(Label(text=f"@{u['username']}", color=PURPLE, halign='center'))
+            if u.get('username'): l.add_widget(Label(text=f"@{u['username']}", color=PURPLE, halign='center'))
             l.add_widget(Label(text=f"⭐ {u.get('stars_balance', 0)}", color=GOLD, halign='center'))
+            l.add_widget(Label(text=f"ID: {u['id']}", color=WHITE, halign='center'))
         
         l.add_widget(Button(text='Выйти', size_hint_y=None, height=50, background_color=DARK, on_press=self.logout))
         self.add_widget(l)
@@ -42,5 +42,5 @@ class ProfileScreen(Screen):
         app = App.get_running_app()
         app.token = None
         app.user_id = None
-        app.save_session()
+        app.store.delete('user')
         self.manager.current = 'login'
