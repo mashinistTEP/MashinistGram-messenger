@@ -2,32 +2,55 @@ from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
+from kivy.uix.image import Image
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.popup import Popup
 from kivy.app import App
-from config import PURPLE, DARK, WHITE
+from kivy.graphics import Color, RoundedRectangle
+from config import PURPLE, DARK, WHITE, DARKER, icon
 from api import API
+
+class IconButton(Button):
+    def __init__(self, icon_name, **kwargs):
+        super().__init__(**kwargs)
+        self.background_normal = ''
+        self.background_color = (0,0,0,0)
+        self.add_widget(Image(source=icon(icon_name), size=(30, 30), pos_hint={'center_x': 0.5, 'center_y': 0.5}))
+        self.bind(pos=self.update, size=self.update)
+    def update(self, *args):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(*DARK)
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[8])
+
+class ChatButton(Button):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.background_normal = ''
+        self.background_color = (0,0,0,0)
+        self.bind(pos=self.update, size=self.update)
+    def update(self, *args):
+        self.canvas.before.clear()
+        with self.canvas.before:
+            Color(*DARKER)
+            RoundedRectangle(pos=self.pos, size=self.size, radius=[8])
 
 class ChatsScreen(Screen):
     def on_enter(self):
         self.clear_widgets()
         l = BoxLayout(orientation='vertical')
         
-        # Верхняя панель
         top = BoxLayout(orientation='horizontal', size_hint_y=None, height=60, padding=[10, 10])
-        menu_btn = Button(text='☰', size_hint_x=None, width=50, background_color=DARK, on_press=self.open_menu)
-        top.add_widget(menu_btn)
+        top.add_widget(IconButton('menu.png', size_hint_x=None, width=50, on_press=self.open_menu))
         top.add_widget(Label(text='MashinistGram', font_size=22, color=PURPLE, bold=True))
-        top.add_widget(Button(text='🔍', size_hint_x=None, width=60, background_color=DARK, on_press=lambda x: setattr(self.manager, 'current', 'search')))
+        top.add_widget(IconButton('search.png', size_hint_x=None, width=50, on_press=lambda x: setattr(self.manager, 'current', 'search')))
         l.add_widget(top)
         
-        # Никнейм
         res = API.request('check_token.php', data={'token': App.get_running_app().token})
         if res.get('valid'):
             u = res['user']
-            l.add_widget(Label(text=f"Вы: {u['first_name']} {u['last_name']}", size_hint_y=None, height=30, color=WHITE, padding=[10, 0]))
+            l.add_widget(Label(text=f"  {u['first_name']} {u['last_name']}", size_hint_y=None, height=30, color=WHITE, halign='left'))
         
-        # Список чатов
         sv = ScrollView()
         cl = BoxLayout(orientation='vertical', spacing=5, padding=10, size_hint_y=None)
         cl.bind(minimum_height=cl.setter('height'))
@@ -39,21 +62,29 @@ class ChatsScreen(Screen):
                 if chat.get('with_user'):
                     u = chat['with_user']
                     name = f"{u.get('first_name','')} {u.get('last_name','')}"
-                btn = Button(text=name, size_hint_y=None, height=70, background_color=DARK, on_press=lambda x, cid=chat['id']: self.open_chat(cid))
+                btn = ChatButton(text=name, size_hint_y=None, height=70, on_press=lambda x, cid=chat['id']: self.open_chat(cid))
                 cl.add_widget(btn)
         else:
-            cl.add_widget(Label(text='Нет чатов\n\nНажмите 🔍 для поиска', color=WHITE, halign='center'))
+            cl.add_widget(Label(text='Нет чатов\n\nНажмите на лупу для поиска', color=WHITE, halign='center'))
         sv.add_widget(cl)
         l.add_widget(sv)
         self.add_widget(l)
 
     def open_menu(self, instance):
         content = BoxLayout(orientation='vertical', spacing=10, padding=20)
-        content.add_widget(Button(text='💬 Чаты', size_hint_y=None, height=50, background_color=PURPLE, on_press=lambda x: self.menu_action('chats')))
-        content.add_widget(Button(text='👥 Контакты', size_hint_y=None, height=50, background_color=PURPLE, on_press=lambda x: self.menu_action('search')))
-        content.add_widget(Button(text='⚙️ Настройки', size_hint_y=None, height=50, background_color=PURPLE, on_press=lambda x: self.menu_action('settings')))
-        content.add_widget(Button(text='👤 Профиль', size_hint_y=None, height=50, background_color=PURPLE, on_press=lambda x: self.menu_action('profile')))
-        
+        items = [
+            ('user.png', '👤 Профиль', 'profile'),
+            ('settings.png', '⚙️ Настройки', 'settings'),
+            ('search.png', '🔍 Поиск', 'search'),
+        ]
+        for icon_name, text, screen in items:
+            row = BoxLayout(orientation='horizontal', spacing=10, size_hint_y=None, height=50)
+            row.add_widget(Image(source=icon(icon_name), size=(30, 30)))
+            row.add_widget(Label(text=text, color=WHITE))
+            btn = Button(size_hint_x=None, width=50, background_color=(0,0,0,0))
+            btn.bind(on_press=lambda x, s=screen: self.menu_action(s))
+            row.add_widget(btn)
+            content.add_widget(row)
         self.popup = Popup(title='Меню', content=content, size_hint=(0.7, 0.5), auto_dismiss=True)
         self.popup.open()
 

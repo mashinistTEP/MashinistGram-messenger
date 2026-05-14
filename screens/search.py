@@ -3,8 +3,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.textinput import TextInput
+from kivy.uix.image import Image
 from kivy.app import App
-from config import PURPLE, DARK, WHITE, GOLD
+from config import PURPLE, DARK, WHITE, GOLD, icon
 from api import API
 
 class SearchScreen(Screen):
@@ -13,11 +14,14 @@ class SearchScreen(Screen):
         l = BoxLayout(orientation='vertical', padding=20, spacing=10)
         
         top = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
-        top.add_widget(Button(text='←', size_hint_x=None, width=50, background_color=DARK, on_press=lambda x: setattr(self.manager, 'current', 'chats')))
+        back = Button(size_hint_x=None, width=50, background_normal='', background_color=(0,0,0,0))
+        back.add_widget(Image(source=icon('back.png'), size=(25, 25), pos_hint={'center_x': 0.5, 'center_y': 0.5}))
+        back.bind(on_press=lambda x: setattr(self.manager, 'current', 'chats'))
+        top.add_widget(back)
         top.add_widget(Label(text='Поиск', font_size=22, color=PURPLE))
         l.add_widget(top)
         
-        self.query = TextInput(hint_text='Username, email или телефон', multiline=False, size_hint_y=None, height=50)
+        self.query = TextInput(hint_text='Username, email или телефон', multiline=False, size_hint_y=None, height=50, background_color=DARK, foreground_color=WHITE, cursor_color=WHITE)
         l.add_widget(self.query)
         l.add_widget(Button(text='Искать', size_hint_y=None, height=50, background_color=PURPLE, on_press=self.search))
         
