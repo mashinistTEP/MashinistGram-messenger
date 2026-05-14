@@ -10,6 +10,7 @@ from screens.chats import ChatsScreen
 from screens.chat import ChatScreen
 from screens.search import SearchScreen
 from screens.profile import ProfileScreen
+from screens.settings import SettingsScreen
 
 class MashinistGramApp(App):
     token = None
@@ -24,6 +25,7 @@ class MashinistGramApp(App):
         sm.add_widget(ChatScreen(name='chat'))
         sm.add_widget(SearchScreen(name='search'))
         sm.add_widget(ProfileScreen(name='profile'))
+        sm.add_widget(SettingsScreen(name='settings'))
         return sm
 
 if __name__ == '__main__':

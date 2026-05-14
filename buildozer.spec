@@ -33,10 +33,10 @@ source.include_exts = py,png,jpg,kv,atlas
 # Do not prefix with './'
 #source.exclude_patterns = license,images/*/*.jpg
 
-# (str) version
+#версия
 version = pre-alpha.0.0.0.1
 
-#kode of version
+#код версии
 android.numeric_version = 1
 
 # (str) Application versioning (method 2)
@@ -47,7 +47,8 @@ android.numeric_version = 1
 # comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy,requests,pillow
 
-android.permissions = INTERNET, ACCESS_NETWORK_STATE
+#разрешения
+android.permissions = INTERNET, ACCESS_NETWORK_STATE, READ_CONTACTS, WRITE_CONTACTS, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, CAMERA, READ_MEDIA_IMAGES, READ_MEDIA_VIDEO, READ_MEDIA_AUDIO
 android.allow_cleartext_traffic = true
 
 # (str) Custom source folders for requirements
@@ -107,9 +108,6 @@ fullscreen = 0
 #icon.adaptive_foreground.filename = %(source.dir)s/data/icon_fg.png
 #icon.adaptive_background.filename = %(source.dir)s/data/icon_bg.png
 
-# (list) Permissions
-# (See https://python-for-android.readthedocs.io/en/latest/buildoptions.html for all the supported syntaxes and properties)
-#android.permissions = android.permission.INTERNET, (name=android.permission.WRITE_EXTERNAL_STORAGE;maxSdkVersion=18)
 
 # (list) features (adds uses-feature -tags to manifest)
 #android.features = android.hardware.usb.host
