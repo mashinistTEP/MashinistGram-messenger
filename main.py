@@ -13,7 +13,7 @@ import requests
 import json
 
 # ====== НАСТРОЙКИ ======
-API_URL = "https://mashinistgram.atwebpages.com/api/mg"
+API_URL = "https://mashinistgrammsg.atwebpages.com/api/mg"
 Window.clearcolor = get_color_from_hex('#1A1A2E')
 PURPLE = get_color_from_hex('#B659FF')
 GOLD = get_color_from_hex('#FFD700')
@@ -35,7 +35,7 @@ class API:
 class LoginScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
-        l = BoxLayout(orientation='vertical', padding=40, spacing=15)
+        l = BoxLayout(orientation='vertical', padding=[40, 200, 40, 200], spacing=15)
         l.add_widget(Label(text='MashinistGram', font_size=32, color=PURPLE, bold=True, size_hint_y=None, height=80))
         self.email = TextInput(hint_text='Email', multiline=False, size_hint_y=None, height=50)
         self.pw = TextInput(hint_text='Пароль', password=True, multiline=False, size_hint_y=None, height=50)
@@ -57,7 +57,7 @@ class LoginScreen(Screen):
 class RegisterScreen(Screen):
     def __init__(self, **kw):
         super().__init__(**kw)
-        l = BoxLayout(orientation='vertical', padding=40, spacing=15)
+        l = BoxLayout(orientation='vertical', padding=[40, 100, 40, 100], spacing=15)
         l.add_widget(Label(text='Регистрация', font_size=28, color=PURPLE, bold=True, size_hint_y=None, height=60))
         self.fn = TextInput(hint_text='Имя', multiline=False, size_hint_y=None, height=50)
         self.ln = TextInput(hint_text='Фамилия', multiline=False, size_hint_y=None, height=50)
