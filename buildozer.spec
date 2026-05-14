@@ -33,8 +33,11 @@ source.include_exts = py,png,jpg,kv,atlas
 # Do not prefix with './'
 #source.exclude_patterns = license,images/*/*.jpg
 
-# (str) Application versioning (method 1)
-version = 0.1
+# (str) version
+version = pre-alpha.0.0.0.1
+
+#kode of version
+android.numeric_version = 1
 
 # (str) Application versioning (method 2)
 # version.regex = __version__ = ['"](.*)['"]
