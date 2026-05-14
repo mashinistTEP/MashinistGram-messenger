@@ -14,5 +14,4 @@ MSG_THEIR = get_color_from_hex('#2A2A3E')
 PREMIUM_NICK = get_color_from_hex('#E0AAFF')
 
 def icon(name):
-    base = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base, 'icons', name)
+    return ''  # временно отключаем иконки
